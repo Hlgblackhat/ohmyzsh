@@ -18,6 +18,7 @@ autoload -Uz add-zsh-hook
 setopt PROMPT_SUBST
 async_init
 PROMPT=''
+RPROMPT='%B$(battery_pct_prompt)'
 # }}}
 
 # Options {{{
@@ -28,16 +29,16 @@ DRACULA_DISPLAY_GIT=${DRACULA_DISPLAY_GIT:-1}
 DRACULA_DISPLAY_TIME=${DRACULA_DISPLAY_TIME:-0}
 
 # Set to 1 to show the 'context' segment
-DRACULA_DISPLAY_CONTEXT=${DRACULA_DISPLAY_CONTEXT:-0}
+DRACULA_DISPLAY_CONTEXT=${DRACULA_DISPLAY_CONTEXT:-1}
 
 # Changes the arrow icon
 DRACULA_ARROW_ICON=${DRACULA_ARROW_ICON:-➜ }
 
 # Set to 1 to use a new line for commands
-DRACULA_DISPLAY_NEW_LINE=${DRACULA_DISPLAY_NEW_LINE:-0}
+DRACULA_DISPLAY_NEW_LINE=${DRACULA_DISPLAY_NEW_LINE:-1}
 
 # Set to 1 to show full path of current working directory
-DRACULA_DISPLAY_FULL_CWD=${DRACULA_DISPLAY_FULL_CWD:-0}
+DRACULA_DISPLAY_FULL_CWD=${DRACULA_DISPLAY_FULL_CWD:-1}
 
 # function to detect if git has support for --no-optional-locks
 dracula_test_git_optional_lock() {
@@ -68,7 +69,7 @@ DRACULA_GIT_NOLOCK=${DRACULA_GIT_NOLOCK:-$(dracula_test_git_optional_lock)}
 
 # time format string
 if [[ -z "$DRACULA_TIME_FORMAT" ]]; then
-	DRACULA_TIME_FORMAT="%-H:%M"
+	DRACULA_TIME_FORMAT="%-H:%M:"
 	# check if locale uses AM and PM
 	if locale -ck LC_TIME 2>/dev/null | grep -q '^t_fmt="%r"$'; then
 		DRACULA_TIME_FORMAT="%-I:%M%p"
@@ -103,7 +104,7 @@ PROMPT+='%F{green}%B$(dracula_time_segment)'
 # User context segment {{{
 dracula_context() {
 	if (( DRACULA_DISPLAY_CONTEXT )); then
-		if [[ -n "${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]] || (( EUID == 0 )); then
+		if [[ -n "${HOST-}${SSH_CONNECTION-}${SSH_CLIENT-}${SSH_TTY-}" ]] || (( EUID == 0 )); then
 			echo '%n@%m '
 		else
 			echo '%n '
